@@ -1,0 +1,61 @@
+form {
+  border: 2px solid #cccccc;
+  border-radius: 6px;
+  width: 600px;
+  height: 180px;
+  margin-left: 35px;
+}
+
+button {
+  width: 68px;
+  height: 34px;
+  font-size: 16px;
+  line-height: 19px;
+  background: #007bff;
+  border-radius: 4px;
+  color: #ffffff;
+  border: none;
+  position: absolute;
+  left: 510px;
+}
+
+button:disabled {
+  background: #0a4e95;
+  color: #8a8f95;
+}
+
+textarea {
+  background-color: #15202b;
+  border: none;
+  resize: none;
+  font-size: 16px;
+  line-height: 19px;
+  font-family: "Roboto", sans-serif;
+  color: #cccccc;
+  width: 500px;
+  height: 41px;
+  margin-top: 20px;
+  margin-left: 16px;
+}
+
+.MessageError {
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  font-size: 16px;
+  line-height: 19px;
+  color: #721c24;
+  width: 338px;
+  height: 25px;
+  padding-left: 4px;
+  padding-top: 7px;
+  position: absolute;
+  left: 10px;
+}
+
+.SubmitPart {
+  margin-top: 60px;
+  margin-right: 6px;
+  margin-left: 6px;
+  position: relative;
+}

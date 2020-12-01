@@ -1,0 +1,29 @@
+li {
+  width: 600px;
+  height: 100px;
+  border-radius: 6px;
+  background: #343a40;
+  margin-bottom: 15px;
+  list-style: none;
+}
+
+.top {
+  display: flex;
+  flex-direction: row;
+  margin-top: 20px;
+  margin-left: 20px;
+  margin-right: 20px;
+  justify-content: space-between;
+  font-size: 14px;
+  line-height: 16px;
+  color: #6c757d;
+}
+
+.bottom {
+  font-size: 14px;
+  line-height: 16px;
+  color: #ffffff;
+  margin-top: 16px;
+  margin-left: 20px;
+  margin-right: 125px;
+}
