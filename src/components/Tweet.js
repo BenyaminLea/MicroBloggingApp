@@ -13,7 +13,7 @@ class Tweet extends React.Component {
 
   render() {
     return (
-      <li>
+      <li className="tweet">
         <div className="top">
           <div>{this.state.userName}</div>
           <div>{this.state.date}</div>

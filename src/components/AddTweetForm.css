@@ -1,4 +1,4 @@
-form {
+.formTweet {
   border: 2px solid #cccccc;
   border-radius: 6px;
   width: 600px;
@@ -6,7 +6,7 @@ form {
   margin-left: 35px;
 }
 
-button {
+.buttonTweet {
   width: 68px;
   height: 34px;
   font-size: 16px;
@@ -19,12 +19,12 @@ button {
   left: 510px;
 }
 
-button:disabled {
+.buttonTweet:disabled {
   background: #0a4e95;
   color: #8a8f95;
 }
 
-textarea {
+.textareaTweet {
   background-color: #15202b;
   border: none;
   resize: none;

@@ -3,7 +3,7 @@ import Tweet from "./Tweet";
 import "./TweetsList.css";
 function TweetsList(props) {
   return (
-    <ul>
+    <ul className="tweets">
       {props.tweets.map((tweet) => (
         <Tweet
           key={tweet.date}

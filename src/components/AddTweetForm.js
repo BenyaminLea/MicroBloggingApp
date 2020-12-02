@@ -25,7 +25,6 @@ class AddTweetForm extends React.Component {
     const newTweet = {
       content: this.state.tweet,
       date: dateR,
-      userName: "yonathan",
     };
     this.props.onAddTweet(newTweet);
     this.setState({ tweet: "" });
@@ -33,12 +32,16 @@ class AddTweetForm extends React.Component {
 
   render() {
     return (
-      <form className="form" onSubmit={(event) => this.handleSubmit(event)}>
+      <form
+        className="formTweet"
+        onSubmit={(event) => this.handleSubmit(event)}
+      >
         <div>
           <textarea
             type="text"
             name="tweet"
             id="tweet"
+            className="textareaTweet"
             required
             placeholder="What you have in mind..."
             value={this.state.tweet}
@@ -51,7 +54,11 @@ class AddTweetForm extends React.Component {
               The tweet can't contain more than 140 chars.
             </div>
           )}
-          <button type="submit" disabled={this.state.IsDisabled}>
+          <button
+            className="buttonTweet"
+            type="submit"
+            disabled={this.state.IsDisabled}
+          >
             Tweet
           </button>
         </div>
