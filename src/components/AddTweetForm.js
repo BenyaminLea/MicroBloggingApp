@@ -21,12 +21,11 @@ class AddTweetForm extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    let date = new Date().toISOString();
+    let dateR = new Date().toISOString();
     const newTweet = {
-      tweet: this.state.tweet,
-      dateCreated: Date.now(),
-      dateReadable: date,
-      author: "yonathan",
+      content: this.state.tweet,
+      date: dateR,
+      userName: "yonathan",
     };
     this.props.onAddTweet(newTweet);
     this.setState({ tweet: "" });

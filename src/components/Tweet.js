@@ -5,9 +5,9 @@ class Tweet extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      tweet: this.props.tweet,
-      dateReadable: this.props.dateReadable,
-      author: this.props.author,
+      content: this.props.content,
+      date: this.props.date,
+      userName: this.props.userName,
     };
   }
 
@@ -15,10 +15,10 @@ class Tweet extends React.Component {
     return (
       <li>
         <div className="top">
-          <div>{this.state.author}</div>
-          <div>{this.state.dateReadable}</div>
+          <div>{this.state.userName}</div>
+          <div>{this.state.date}</div>
         </div>
-        <div className="bottom">{this.state.tweet}</div>
+        <div className="bottom">{this.state.content}</div>
       </li>
     );
   }
