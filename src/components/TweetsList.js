@@ -1,19 +1,27 @@
 import React from "react";
 import Tweet from "./Tweet";
 import "./TweetsList.css";
-function TweetsList(props) {
+import { MyContext } from "../context";
+
+const TweetsList = () => {
   return (
-    <ul className="tweets">
-      {props.tweets.map((tweet) => (
-        <Tweet
-          key={tweet.date}
-          content={tweet.content}
-          date={tweet.date}
-          userName={tweet.userName}
-        />
-      ))}
-    </ul>
+    <MyContext.Consumer>
+      {(context) => {
+        return (
+          <ul className="tweets">
+            {context.tweets.map((tweet) => (
+              <Tweet
+                key={tweet.id}
+                content={tweet.content}
+                date={tweet.date}
+                userName={tweet.userName}
+              />
+            ))}
+          </ul>
+        );
+      }}
+    </MyContext.Consumer>
   );
-}
+};
 
 export default TweetsList;

@@ -6,6 +6,7 @@ import "./App.css";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import User from "./components/User";
 import localforage from "localforage";
+import { MyContext } from "./context";
 
 class App extends React.Component {
   constructor(props) {
@@ -15,19 +16,33 @@ class App extends React.Component {
       isLoading: false,
       error: "",
       userName: "yonathan",
+      tweet: "",
+      IsDisabled: false,
+      setDisabled: (bool) => this.setState({ IsDisabled: bool }),
+      handleOnTweetChange: (tweet) => this.setState({ tweet: tweet }),
+      setTweet: (newTweet) => {
+        newTweet.userName = this.state.userName;
+        this.setState({ isLoading: true, error: "" });
+        createTweet(newTweet)
+          .then(() => this.loadTweets())
+          .catch((err) => this.setState({ isLoading: false, error: err }));
+      },
     };
   }
 
   componentDidMount() {
-    this.loadTweets();
+    this.loadTweets1();
     localforage.getItem("name").then((value) => {
       if (value) {
         this.setState({ userName: value });
       }
     });
+    setInterval(() => {
+      this.loadTweets();
+    }, 5000);
   }
 
-  async loadTweets() {
+  async loadTweets1() {
     const response = await getTweets();
     this.setState({
       tweets: response.data.tweets,
@@ -35,14 +50,20 @@ class App extends React.Component {
     });
   }
 
-  handleOnAddTweet(newTweet) {
-    console.log(newTweet);
-    newTweet.userName = this.state.userName;
-    console.log(newTweet);
-    this.setState({ isLoading: true, error: "" });
-    createTweet(newTweet)
-      .then(() => this.loadTweets())
-      .catch((err) => this.setState({ isLoading: false, error: err }));
+  async loadTweets() {
+    const response = await getTweets();
+    let index = 0;
+    for (var i = 0; i < response.data.tweets.length; i++) {
+      if (response.data.tweets[i].id === this.state.tweets[0].id) {
+        index = i;
+        break;
+      }
+    }
+    const newTweets = response.data.tweets.slice(0, index);
+    this.setState((prevState) => ({
+      tweets: [...newTweets, ...prevState.tweets],
+      isLoading: false,
+    }));
   }
 
   handleOnUserChange(newUser) {
@@ -52,41 +73,43 @@ class App extends React.Component {
 
   render() {
     return (
-      <Router>
-        <div className="main">
-          <nav>
-            <ul className="navbar">
-              <li className="navLi">
-                <Link to="/">Home</Link>
-              </li>
-              <li className="navLi">
-                <Link to="/user">User</Link>
-              </li>
-            </ul>
-          </nav>
-          <div>
-            <Switch>
-              <Route path="/user">
-                <User
-                  onChangeUser={(newUser) => this.handleOnUserChange(newUser)}
-                />
-              </Route>
-              <Route path="/">
-                {this.state.isLoading && <p className="loading">Loading...</p>}
-                {!this.state.isLoading && (
-                  <div>
-                    <AddTweetForm
-                      onAddTweet={(newTweet) => this.handleOnAddTweet(newTweet)}
-                    />
-                    {this.state.error && <div>{this.state.error}</div>}
-                    <TweetsList tweets={this.state.tweets} />
-                  </div>
-                )}
-              </Route>
-            </Switch>
+      <MyContext.Provider value={this.state}>
+        <Router>
+          <div className="main">
+            <nav>
+              <ul className="navbar">
+                <li className="navLi">
+                  <Link to="/">Home</Link>
+                </li>
+                <li className="navLi">
+                  <Link to="/user">User</Link>
+                </li>
+              </ul>
+            </nav>
+            <div>
+              <Switch>
+                <Route path="/user">
+                  <User
+                    onChangeUser={(newUser) => this.handleOnUserChange(newUser)}
+                  />
+                </Route>
+                <Route path="/">
+                  {this.state.isLoading && (
+                    <p className="loading">Loading...</p>
+                  )}
+                  {!this.state.isLoading && (
+                    <div>
+                      <AddTweetForm />
+                      {this.state.error && <div>{this.state.error}</div>}
+                      <TweetsList />
+                    </div>
+                  )}
+                </Route>
+              </Switch>
+            </div>
           </div>
-        </div>
-      </Router>
+        </Router>
+      </MyContext.Provider>
     );
   }
 }
