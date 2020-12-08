@@ -11,9 +11,9 @@ const TweetsList = () => {
           <ul className="tweets">
             {context.tweets.map((tweet) => (
               <Tweet
-                key={tweet.id}
+                key={tweet.date}
                 content={tweet.content}
-                date={tweet.date}
+                date={tweet.dateR}
                 userName={tweet.userName}
               />
             ))}

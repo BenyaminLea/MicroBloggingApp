@@ -1,12 +1,18 @@
 import React from "react";
 import AddTweetForm from "./components/AddTweetForm";
 import TweetsList from "./components/TweetsList";
-import { createTweet, getTweets } from "./lib/api";
 import "./App.css";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link,
+  Redirect,
+} from "react-router-dom";
 import User from "./components/User";
-import localforage from "localforage";
 import { MyContext } from "./context";
+import firebase from "./firebase";
+import SignLogIn from "./components/SignLogIn";
 
 class App extends React.Component {
   constructor(props) {
@@ -15,7 +21,7 @@ class App extends React.Component {
       tweets: [],
       isLoading: false,
       error: "",
-      userName: "yonathan",
+      userName: "",
       tweet: "",
       IsDisabled: false,
       setDisabled: (bool) => this.setState({ IsDisabled: bool }),
@@ -23,91 +29,95 @@ class App extends React.Component {
       setTweet: (newTweet) => {
         newTweet.userName = this.state.userName;
         this.setState({ isLoading: true, error: "" });
-        createTweet(newTweet)
-          .then(() => this.loadTweets())
-          .catch((err) => this.setState({ isLoading: false, error: err }));
+        firebase.firestore().collection("tweets").add(newTweet);
       },
     };
   }
 
   componentDidMount() {
-    this.loadTweets1();
-    localforage.getItem("name").then((value) => {
-      if (value) {
-        this.setState({ userName: value });
-      }
-    });
-    setInterval(() => {
-      this.loadTweets();
-    }, 5000);
+    this.loadTweets();
   }
 
-  async loadTweets1() {
-    const response = await getTweets();
-    this.setState({
-      tweets: response.data.tweets,
-      isLoading: false,
-    });
+  getUserName() {
+    var user = firebase.auth().currentUser;
+    firebase
+      .firestore()
+      .collection("users")
+      .where("uid", "==", user.uid)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          this.setState({ userName: doc.data().username });
+        });
+      });
   }
 
   async loadTweets() {
-    const response = await getTweets();
-    let index = 0;
-    for (var i = 0; i < response.data.tweets.length; i++) {
-      if (response.data.tweets[i].id === this.state.tweets[0].id) {
-        index = i;
-        break;
-      }
-    }
-    const newTweets = response.data.tweets.slice(0, index);
-    this.setState((prevState) => ({
-      tweets: [...newTweets, ...prevState.tweets],
-      isLoading: false,
-    }));
+    firebase
+      .firestore()
+      .collection("tweets")
+      .onSnapshot((querySnapshot) => {
+        var listTweets = [];
+        querySnapshot.forEach((doc) => {
+          listTweets.push(doc.data());
+        });
+        listTweets.sort((a, b) => {
+          return b.date - a.date;
+        });
+        this.setState({ tweets: listTweets, isLoading: false });
+      });
   }
 
-  handleOnUserChange(newUser) {
-    localforage.setItem("name", newUser);
-    this.setState({ userName: newUser });
+  isLoggedIn() {
+    var user = firebase.auth().currentUser;
+    if (user) {
+      this.getUserName();
+      return true;
+    } else {
+      return false;
+    }
   }
 
   render() {
     return (
       <MyContext.Provider value={this.state}>
         <Router>
-          <div className="main">
-            <nav>
-              <ul className="navbar">
-                <li className="navLi">
-                  <Link to="/">Home</Link>
-                </li>
-                <li className="navLi">
-                  <Link to="/user">User</Link>
-                </li>
-              </ul>
-            </nav>
-            <div>
-              <Switch>
-                <Route path="/user">
-                  <User
-                    onChangeUser={(newUser) => this.handleOnUserChange(newUser)}
-                  />
-                </Route>
-                <Route path="/">
-                  {this.state.isLoading && (
-                    <p className="loading">Loading...</p>
-                  )}
-                  {!this.state.isLoading && (
-                    <div>
-                      <AddTweetForm />
-                      {this.state.error && <div>{this.state.error}</div>}
-                      <TweetsList />
-                    </div>
-                  )}
-                </Route>
-              </Switch>
-            </div>
-          </div>
+          {!this.isLoggedIn() && <Redirect to="/" />}
+          <Switch>
+            <Route path="/tweets">
+              <nav>
+                <ul className="navbar">
+                  <li className="navLi">
+                    <Link to="/tweets">Tweets</Link>
+                  </li>
+                  <li className="navLi">
+                    <Link
+                      to="/"
+                      onClick={() => {
+                        firebase
+                          .auth()
+                          .signOut()
+                          .then(() => console.log("out"));
+                      }}
+                    >
+                      LogOut
+                    </Link>
+                  </li>
+                </ul>
+              </nav>
+              {this.state.isLoading && <p className="loading">Loading...</p>}
+              {!this.state.isLoading && (
+                <div>
+                  <AddTweetForm />
+                  {this.state.error && <div>{this.state.error}</div>}
+                  <TweetsList />
+                </div>
+              )}
+            </Route>
+            <Route path="/">
+              <SignLogIn />
+            </Route>
+          </Switch>
         </Router>
       </MyContext.Provider>
     );

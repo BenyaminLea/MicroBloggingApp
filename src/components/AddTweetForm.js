@@ -11,10 +11,11 @@ const AddTweetForm = () => {
             className="formTweet"
             onSubmit={(event) => {
               event.preventDefault();
-              let dateR = new Date().toISOString();
+              let date = new Date();
               const newTweet = {
                 content: context.tweet,
-                date: dateR,
+                dateR: date.toISOString(),
+                date: date,
               };
               context.setTweet(newTweet);
               context.handleOnTweetChange("");

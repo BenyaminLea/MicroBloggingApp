@@ -1,21 +1,16 @@
 import React from "react";
 import "./User.css";
-import localforage from "localforage";
 
 class User extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      userName: "yonathan",
+      userName: "",
     };
   }
 
   componentDidMount() {
-    localforage.getItem("name").then((value) => {
-      if (value) {
-        this.setState({ userName: value });
-      }
-    });
+    this.setState({ userName: this.props.username });
   }
 
   handleSubmit(event) {
