@@ -92,10 +92,7 @@ class App extends React.Component {
                     <Link
                       to="/"
                       onClick={() => {
-                        firebase
-                          .auth()
-                          .signOut()
-                          .then(() => console.log("out"));
+                        firebase.auth().signOut();
                       }}
                     >
                       LogOut
@@ -125,10 +122,7 @@ class App extends React.Component {
                     <Link
                       to="/"
                       onClick={() => {
-                        firebase
-                          .auth()
-                          .signOut()
-                          .then(() => console.log("out"));
+                        firebase.auth().signOut();
                       }}
                     >
                       LogOut
