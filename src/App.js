@@ -71,7 +71,7 @@ class App extends React.Component {
   isLoggedIn() {
     var user = firebase.auth().currentUser;
     if (user) {
-      this.getUserName();
+      //this.getUserName();
       return true;
     } else {
       return false;
@@ -110,7 +110,7 @@ class App extends React.Component {
                 <div>
                   <AddTweetForm />
                   {this.state.error && <div>{this.state.error}</div>}
-                  <TweetsList />
+                  <TweetsList tweets={this.state.tweets} />
                 </div>
               )}
             </Route>
