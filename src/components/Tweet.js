@@ -1,5 +1,6 @@
 import React from "react";
 import "./Tweet.css";
+import firebase from "../firebase";
 
 class Tweet extends React.Component {
   constructor(props) {
@@ -9,6 +10,15 @@ class Tweet extends React.Component {
       date: this.props.date,
       userName: this.props.userName,
     };
+  }
+  componentDidMount() {
+    var docRef = firebase
+      .firestore()
+      .collection("users")
+      .doc(this.props.userName);
+    docRef.get().then((doc) => {
+      this.setState({ userName: doc.data().username });
+    });
   }
 
   render() {

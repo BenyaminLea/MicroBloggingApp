@@ -69,9 +69,12 @@ class SignLogIn extends React.Component {
           email: email,
           username: username,
           photoURL: "",
-          uid: user.user.uid,
         };
-        firebase.firestore().collection("users").add(userObj);
+        firebase
+          .firestore()
+          .collection("users")
+          .doc(user.user.uid)
+          .set(userObj);
         this.setState({
           emailSignIn: "",
           passwordSignIn: "",
@@ -101,9 +104,8 @@ class SignLogIn extends React.Component {
           email: user.email,
           username: user.displayName,
           photoURL: user.photoURL,
-          uid: user.uid,
         };
-        firebase.firestore().collection("users").add(userObj);
+        firebase.firestore().collection("users").doc(user.uid).set(userObj);
       })
       .then(() => {
         this.setState({
@@ -127,6 +129,7 @@ class SignLogIn extends React.Component {
             onChange={(event) => this.emailLogInChange(event)}
           ></input>
           <input
+            type="password"
             placeholder="PassWord"
             value={this.state.passwordLogIn}
             onChange={(event) => this.passwordLogInChange(event)}
@@ -141,6 +144,7 @@ class SignLogIn extends React.Component {
             onChange={(event) => this.emailSignInChange(event)}
           ></input>
           <input
+            type="password"
             placeholder="PassWord"
             value={this.state.passwordSignIn}
             onChange={(event) => this.passwordSignInChange(event)}

@@ -1,5 +1,6 @@
 import React from "react";
 import "./User.css";
+import firebase from "../firebase";
 
 class User extends React.Component {
   constructor(props) {
@@ -10,7 +11,11 @@ class User extends React.Component {
   }
 
   componentDidMount() {
-    this.setState({ userName: this.props.username });
+    var user = firebase.auth().currentUser;
+    var docRef = firebase.firestore().collection("users").doc(user.uid);
+    docRef.get().then((doc) => {
+      this.setState({ userName: doc.data().username });
+    });
   }
 
   handleSubmit(event) {
@@ -21,6 +26,13 @@ class User extends React.Component {
 
   handleUserNameChange(event) {
     this.setState({ userName: event.target.value });
+  }
+
+  uploadImage(event) {
+    var user = firebase.auth().currentUser;
+    let storageRef = firebase.storage().ref(`photos/${user.uid}`);
+    let firstFile = event.target.files[0];
+    storageRef.put(firstFile);
   }
 
   render() {
@@ -47,6 +59,20 @@ class User extends React.Component {
             Save
           </button>
         </form>
+        <div>
+          <p>Upload Profile Picture</p>
+        </div>
+        <div>
+          <input
+            type="file"
+            accept="image/*"
+            capture="camera"
+            id="cameraInput"
+            onChange={(event) => {
+              this.uploadImage(event);
+            }}
+          />
+        </div>
       </div>
     );
   }

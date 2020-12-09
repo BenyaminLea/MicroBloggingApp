@@ -27,7 +27,7 @@ class App extends React.Component {
       setDisabled: (bool) => this.setState({ IsDisabled: bool }),
       handleOnTweetChange: (tweet) => this.setState({ tweet: tweet }),
       setTweet: (newTweet) => {
-        newTweet.userName = this.state.userName;
+        newTweet.userName = firebase.auth().currentUser.uid;
         this.setState({ isLoading: true, error: "" });
         firebase.firestore().collection("tweets").add(newTweet);
       },
@@ -36,20 +36,6 @@ class App extends React.Component {
 
   componentDidMount() {
     this.loadTweets();
-  }
-
-  getUserName() {
-    var user = firebase.auth().currentUser;
-    firebase
-      .firestore()
-      .collection("users")
-      .where("uid", "==", user.uid)
-      .get()
-      .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          this.setState({ userName: doc.data().username });
-        });
-      });
   }
 
   async loadTweets() {
@@ -71,11 +57,20 @@ class App extends React.Component {
   isLoggedIn() {
     var user = firebase.auth().currentUser;
     if (user) {
-      //this.getUserName();
       return true;
     } else {
       return false;
     }
+  }
+
+  onChangeUser(name) {
+    var user = firebase.auth().currentUser;
+    var userDocRef = firebase.firestore().collection("users").doc(user.uid);
+    return firebase.firestore().runTransaction(function (transaction) {
+      return transaction.get(userDocRef).then(function () {
+        transaction.update(userDocRef, { username: name });
+      });
+    });
   }
 
   render() {
@@ -89,6 +84,9 @@ class App extends React.Component {
                 <ul className="navbar">
                   <li className="navLi">
                     <Link to="/tweets">Tweets</Link>
+                  </li>
+                  <li className="navLi">
+                    <Link to="/user">User</Link>
                   </li>
                   <li className="navLi">
                     <Link
@@ -113,6 +111,35 @@ class App extends React.Component {
                   <TweetsList tweets={this.state.tweets} />
                 </div>
               )}
+            </Route>
+            <Route path="/user">
+              <nav>
+                <ul className="navbar">
+                  <li className="navLi">
+                    <Link to="/tweets">Tweets</Link>
+                  </li>
+                  <li className="navLi">
+                    <Link to="/user">User</Link>
+                  </li>
+                  <li className="navLi">
+                    <Link
+                      to="/"
+                      onClick={() => {
+                        firebase
+                          .auth()
+                          .signOut()
+                          .then(() => console.log("out"));
+                      }}
+                    >
+                      LogOut
+                    </Link>
+                  </li>
+                </ul>
+              </nav>
+              <User
+                onChangeUser={(name) => this.onChangeUser(name)}
+                username={this.state.userName}
+              />
             </Route>
             <Route path="/">
               <SignLogIn />
